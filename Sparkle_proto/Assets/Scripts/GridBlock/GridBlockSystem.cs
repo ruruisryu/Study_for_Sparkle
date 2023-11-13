@@ -11,10 +11,16 @@ public class GridBlockSystem : MonoBehaviour
 
     private int selectedBlockIndex = -1;
     [SerializeField] private GameObject gridVisualization;
+    private GridData floorData, blockData;
+    private Renderer preveiwRenderer;
+    private List<GameObject> placedGameObjects = new List<GameObject>();
 
     private void Start()
     {
         StopPlacement();
+        floorData = new GridData();
+        blockData = new GridData();
+        preveiwRenderer = cellIndicator.GetComponentInChildren<Renderer>();
     }
 
     public void StartPlacement(int id)
@@ -39,15 +45,36 @@ public class GridBlockSystem : MonoBehaviour
         {
             return;
         }
+        // 마우스로 클릭한 부분에 해당하는 GridPosition을 계산한다.
         Vector3 mousePos = InputManager.instance.GetSelectedMapPosition();
+        Vector3Int gridPos = grid.WorldToCell(mousePos);
+        
+        // 그리드 밖을 클릭했다면 return
         bool isInGrid = mousePos.x != Vector3.negativeInfinity.x;
-        if (isInGrid)
+        if (!isInGrid)
         {
-            Debug.Log("isInGrid: true");
-            Vector3Int gridPos = grid.WorldToCell(mousePos);
-            GameObject newBlock = Instantiate(databases.blockData[selectedBlockIndex].Prefab);
-            newBlock.transform.position = grid.CellToWorld(gridPos);
+            return;
         }
+        // 클락한 위치에 블럭을 놓을 수 있는지 판단하고 블럭을 놓는다.
+        bool placementValidity = CheckPlacementValidity(gridPos, selectedBlockIndex);
+        if (placementValidity == false)
+        {
+            return;
+        }
+        GameObject newBlock = Instantiate(databases.blockData[selectedBlockIndex].Prefab);
+        newBlock.transform.position = grid.CellToWorld(gridPos);
+        placedGameObjects.Add(newBlock);
+        GridData selectedData = databases.blockData[selectedBlockIndex].ID == 0 ? floorData : blockData;
+        selectedData.AddObjectAt(gridPos, 
+                                databases.blockData[selectedBlockIndex].Size,
+                                databases.blockData[selectedBlockIndex].ID,
+                                placedGameObjects.Count - 1);
+    }
+
+    private bool CheckPlacementValidity(Vector3Int gridPosition, int selectedObjectIndex)
+    {
+        GridData selectedData = databases.blockData[selectedBlockIndex].ID == 0 ? floorData : blockData;
+        return selectedData.CanPlaceObjectAt(gridPosition, databases.blockData[selectedBlockIndex].Size);
     }
 
     private void StopPlacement()
@@ -70,12 +97,14 @@ public class GridBlockSystem : MonoBehaviour
         Vector3 mousePos = InputManager.instance.GetSelectedMapPosition();
         bool isInGrid = mousePos.x != Vector3.negativeInfinity.x;
         cellIndicator.SetActive(isInGrid);
-        if (isInGrid)
+        if (!isInGrid)
         {
-            // CellToWorld: cell position -> world position
-            // WorldToCell: world position -> cell posoition
-            Vector3Int gridPos = grid.WorldToCell(mousePos);
-            cellIndicator.transform.position = grid.CellToWorld(gridPos);
+            return;
         }
+        Vector3Int gridPos = grid.WorldToCell(mousePos);
+        // 마우스를 클릭한 곳에 블럭을 놓을 수 없다면 cellIndicator의 색깔을 빨간색으로 바꿈
+        bool placementValidity = CheckPlacementValidity(gridPos, selectedBlockIndex);
+        preveiwRenderer.material.color = placementValidity ? Color.white : Color.red;
+        cellIndicator.transform.position = grid.CellToWorld(gridPos);
     }
 }
