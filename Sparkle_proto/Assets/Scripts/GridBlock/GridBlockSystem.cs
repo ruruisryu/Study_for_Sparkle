@@ -5,22 +5,22 @@ using UnityEngine;
 
 public class GridBlockSystem : MonoBehaviour
 {
-    [SerializeField] private GameObject cellIndicator;
     [SerializeField] private Grid grid;
     [SerializeField] private BlockDatabaseSO databases;
 
     private int selectedBlockIndex = -1;
     [SerializeField] private GameObject gridVisualization;
     private GridData floorData, blockData;
-    private Renderer preveiwRenderer;
     private List<GameObject> placedGameObjects = new List<GameObject>();
+    [SerializeField] private PreviewSystem preview;
+    
+    private Vector3Int lastDetectedPosition = Vector3Int.zero;
 
     private void Start()
     {
         StopPlacement();
         floorData = new GridData();
         blockData = new GridData();
-        preveiwRenderer = cellIndicator.GetComponentInChildren<Renderer>();
     }
 
     public void StartPlacement(int id)
@@ -34,7 +34,7 @@ public class GridBlockSystem : MonoBehaviour
             return;
         }
         gridVisualization.SetActive(true);
-        cellIndicator.SetActive(true);
+        preview.StartShowingPlacementPreview(databases.blockData[selectedBlockIndex].Prefab, databases.blockData[selectedBlockIndex].Size);
         InputManager.instance.OnClicked += PlaceStructure;
         InputManager.instance.OnExit += StopPlacement;
     }
@@ -69,6 +69,8 @@ public class GridBlockSystem : MonoBehaviour
                                 databases.blockData[selectedBlockIndex].Size,
                                 databases.blockData[selectedBlockIndex].ID,
                                 placedGameObjects.Count - 1);
+        
+        preview.UpdatePosition(grid.CellToWorld(gridPos), false);
     }
 
     private bool CheckPlacementValidity(Vector3Int gridPosition, int selectedObjectIndex)
@@ -81,30 +83,36 @@ public class GridBlockSystem : MonoBehaviour
     {
         selectedBlockIndex = -1;
         gridVisualization.SetActive(false);
-        cellIndicator.SetActive(false);
+        preview.StopShowingPreview();
+        lastDetectedPosition = Vector3Int.zero;
         InputManager.instance.OnClicked -= PlaceStructure;
         InputManager.instance.OnExit -= StopPlacement;
     }
 
     private void Update()
     {
-        if (selectedBlockIndex < 0)
+        if (selectedBlockIndex < 0 || CheckCursorInGrid() == false)
         {
+            preview.HidePreview();
             return;
         }
-        // 마우스가 그리드 위에서 움직이고 있다면, mouseIndicator를 활성화하고 마우스를 따라다니도록 한다.
-        // 마우스가 그리드 바깥에서 움직이고 있다면, 비활성화한다.
+        // 그리드 내에서 마우스의 움직임을 감지했다면
+        Vector3 mousePos = InputManager.instance.GetSelectedMapPosition();
+        Vector3Int gridPos = grid.WorldToCell(mousePos);
+        if (lastDetectedPosition != gridPos)
+        {
+            // 마우스를 클릭한 곳에 블럭을 놓을 수 있는지 없는지를 색으로 나타내줌.
+            bool placementValidity = CheckPlacementValidity(gridPos, selectedBlockIndex);
+            preview.ShowPreview();
+            preview.UpdatePosition(grid.CellToWorld(gridPos), placementValidity);
+            lastDetectedPosition = gridPos;
+        }
+    }
+
+    public bool CheckCursorInGrid()
+    {
         Vector3 mousePos = InputManager.instance.GetSelectedMapPosition();
         bool isInGrid = mousePos.x != Vector3.negativeInfinity.x;
-        cellIndicator.SetActive(isInGrid);
-        if (!isInGrid)
-        {
-            return;
-        }
-        Vector3Int gridPos = grid.WorldToCell(mousePos);
-        // 마우스를 클릭한 곳에 블럭을 놓을 수 없다면 cellIndicator의 색깔을 빨간색으로 바꿈
-        bool placementValidity = CheckPlacementValidity(gridPos, selectedBlockIndex);
-        preveiwRenderer.material.color = placementValidity ? Color.white : Color.red;
-        cellIndicator.transform.position = grid.CellToWorld(gridPos);
+        return isInGrid;
     }
 }
