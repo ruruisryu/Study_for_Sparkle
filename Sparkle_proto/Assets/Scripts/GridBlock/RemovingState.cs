@@ -28,7 +28,7 @@ public class RemovingState : IBuildingState
     public void OnAction(Vector3Int gridPosition)
     {
         GridData selectedData = null;
-        if (gridData.CanPlaceObjectAt(gridPosition, new List<Vector3Int>() { Vector3Int.one }) == false)
+        if (gridData.CanPlaceObjectAt(gridPosition, new List<Vector3Int>() { Vector3Int.zero }) == false)
         {
             selectedData = gridData;
         }
@@ -52,7 +52,7 @@ public class RemovingState : IBuildingState
 
     public void UpdateState(Vector3Int gridPosition)
     {
-        bool validity = gridData.CanPlaceObjectAt(gridPosition, new List<Vector3Int>() { Vector3Int.one });
+        bool validity = gridData.CanPlaceObjectAt(gridPosition, new List<Vector3Int>() { Vector3Int.zero });
         previewSystem.ShowPreview();
         previewSystem.UpdatePosition(grid.CellToWorld(gridPosition), validity);
     }
