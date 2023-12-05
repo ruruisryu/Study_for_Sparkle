@@ -18,11 +18,12 @@ public class PreviewSystem : MonoBehaviour
         cellIndicatorRenderer = cellIndicator.GetComponentInChildren<Renderer>();
     }
 
-    public void StartShowingPlacementPreview(GameObject prefab, Vector2Int size)
+    // TODO
+    public void StartShowingPlacementPreview(GameObject prefab /* , Vector2Int size*/)
     {
         previewObject = Instantiate(prefab);
         PreparePreview(previewObject);
-        PrepareCursor(size);
+        // PrepareCursor(size);
         cellIndicator.SetActive(true);
     }
 

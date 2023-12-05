@@ -29,10 +29,9 @@ public class PlacementState : IBuildingState
         selectedBlockIndex = database.blockData.FindIndex(data => data.ID == id);
         if (selectedBlockIndex > -1)
         {
-            /*
-            previewSystem.StartShowingPlacementPreview( database.blockData[selectedBlockIndex].Prefab, 
-                                                        database.blockData[selectedBlockIndex].Size);
-                                                        */
+            // TODO
+            previewSystem.StartShowingPlacementPreview( database.blockData[selectedBlockIndex].Prefab /*, 
+                                                        database.blockData[selectedBlockIndex].Size*/);
         }
         else
         {
@@ -55,19 +54,17 @@ public class PlacementState : IBuildingState
         }
 
         int index = objectPlacer.PlaceObject(database.blockData[selectedBlockIndex].Prefab, grid.CellToWorld(gridPosition));
-        /*  gridData.AddObjectAt(gridPosition, 
+        gridData.AddObjectAt(gridPosition, 
             database.blockData[selectedBlockIndex].Size,
             database.blockData[selectedBlockIndex].ID,
             index);
-        */
         
         previewSystem.UpdatePosition(grid.CellToWorld(gridPosition), false);
     }
 
     public bool CheckPlacementValidity(Vector3Int gridPosition, int selectedObjectIndex)
     {
-        // return gridData.CanPlaceObjectAt(gridPosition, database.blockData[selectedBlockIndex].Size);
-        return false;
+        return gridData.CanPlaceObjectAt(gridPosition, database.blockData[selectedBlockIndex].Size);
     }
 
     public void UpdateState(Vector3Int gridPosition)

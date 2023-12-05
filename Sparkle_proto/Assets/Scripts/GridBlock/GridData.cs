@@ -7,7 +7,7 @@ public class GridData
 {
     private Dictionary<Vector3Int, PlacementData> placedObjects = new Dictionary<Vector3Int, PlacementData>();
 
-    public void AddObjectAt(Vector3Int gridPosition, Vector2Int objectSize, int ID, int placedObjectIndex)
+    public void AddObjectAt(Vector3Int gridPosition, List<Vector3Int> objectSize, int ID, int placedObjectIndex)
     {
         List<Vector3Int> positionToOccupy = CalculatePositions(gridPosition, objectSize);
         PlacementData data = new PlacementData(positionToOccupy, ID, placedObjectIndex);
@@ -21,20 +21,17 @@ public class GridData
         }
     }
 
-    private List<Vector3Int> CalculatePositions(Vector3Int gridPosition, Vector2Int objectSize)
+    private List<Vector3Int> CalculatePositions(Vector3Int gridPosition, List<Vector3Int> objectSize)
     {
         List<Vector3Int> returnVal = new();
-        for (int x = 0; x < objectSize.x; x++)
+        for (int i = 0; i < objectSize.Count; i++)
         {
-            for (int y = 0; y < objectSize.y; y++)
-            {
-                returnVal.Add((gridPosition + new Vector3Int(x, 0, y)));
-            }
+            returnVal.Add((gridPosition + new Vector3Int(objectSize[i].x, 0, objectSize[i].z)));
         }
         return returnVal;
     }
 
-    public bool CanPlaceObjectAt(Vector3Int gridPosition, Vector2Int objectSize)
+    public bool CanPlaceObjectAt(Vector3Int gridPosition, List<Vector3Int> objectSize)
     {
         List<Vector3Int> positionToOccupy = CalculatePositions(gridPosition, objectSize);
         foreach (var pos in positionToOccupy)
