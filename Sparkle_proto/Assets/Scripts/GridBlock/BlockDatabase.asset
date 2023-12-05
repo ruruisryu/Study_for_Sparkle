@@ -15,6 +15,13 @@ MonoBehaviour:
   blockData:
   - <Name>k__BackingField: Block1
     <ID>k__BackingField: 0
-    <Size>k__BackingField: {x: 2, y: 3}
+    <Size>k__BackingField:
+    - {x: 0, y: 1}
+    - {x: 0, y: 0}
+    - {x: 1, y: 0}
+    - {x: 1, y: -1}
     <Prefab>k__BackingField: {fileID: 5656383118407985440, guid: 0670f6725237f4de5ab8e32c5e7155db,
       type: 3}
+    Price: 
+    Effect: 
+    Turn: 4

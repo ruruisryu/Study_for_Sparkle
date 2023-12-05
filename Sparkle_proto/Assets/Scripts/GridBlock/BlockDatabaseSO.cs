@@ -12,8 +12,20 @@ public class BlockDatabaseSO : ScriptableObject
 [Serializable]
 public class BlockData
 {
-    [field: SerializeField] public string Name { get; private set; }
+    [field: SerializeField] public string Name { get; private set; }    // 필요없다면 삭제
     [field: SerializeField] public int ID { get; private set; }
-    [field: SerializeField] public Vector2Int Size { get; private set; } = Vector2Int.one;
+    [field: SerializeField] public List<Vector2Int> Size { get; private set; }
     [field: SerializeField] public GameObject Prefab { get; private set; }
+    [field: SerializeField] public List<int> Price;     // [10]
+    [field: SerializeField] public List<int> Effect;    // [7]
+    [field: SerializeField] public int Turn;
+
+    /*
+    public int CardNum;
+    public List<int> Price; //[10]
+    public List<int> Effect; //[7]
+    public int Turn;
+    public int Slot;
+     */
 }
+
