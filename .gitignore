@@ -78,3 +78,7 @@ Sparkle_proto/UserSettings/
 Sparkle_proto/Library/
 
 Sparkle_proto/Logs/
+
+Sparkle_proto/obj/Debug/
+
+Sparkle_proto/.idea/.idea.Sparkle_proto/.idea/
