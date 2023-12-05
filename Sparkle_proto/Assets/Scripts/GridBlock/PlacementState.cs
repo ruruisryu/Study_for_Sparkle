@@ -29,8 +29,7 @@ public class PlacementState : IBuildingState
         selectedBlockIndex = database.blockData.FindIndex(data => data.ID == id);
         if (selectedBlockIndex > -1)
         {
-            previewSystem.StartShowingPlacementPreview( database.blockData[selectedBlockIndex].Prefab, 
-                                                        database.blockData[selectedBlockIndex].Size);
+            previewSystem.StartShowingPlacementPreview( database.blockData[selectedBlockIndex].Prefab);
         }
         else
         {
@@ -38,6 +37,7 @@ public class PlacementState : IBuildingState
         }
     }
 
+    // 블럭을 배치하는 상태를 종료시킨다.
     public void EndState()
     {
         previewSystem.StopShowingPreview();
@@ -45,14 +45,16 @@ public class PlacementState : IBuildingState
 
     public void OnAction(Vector3Int gridPosition)
     {
-        // 클락한 위치에 블럭을 놓을 수 있는지 판단하고 블럭을 놓는다.
+        // 클락한 위치에 블럭을 놓을 수 있는지 판단
         bool placementValidity = CheckPlacementValidity(gridPosition, selectedBlockIndex);
         if (placementValidity == false)
         {
             return;
         }
 
+        // 블럭 (게임 오브젝트) 추가
         int index = objectPlacer.PlaceObject(database.blockData[selectedBlockIndex].Prefab, grid.CellToWorld(gridPosition));
+        // 블럭 (데이터) 추가
         gridData.AddObjectAt(gridPosition, 
             database.blockData[selectedBlockIndex].Size,
             database.blockData[selectedBlockIndex].ID,
@@ -61,6 +63,7 @@ public class PlacementState : IBuildingState
         previewSystem.UpdatePosition(grid.CellToWorld(gridPosition), false);
     }
 
+    // 해당 위치에 블럭을 놓을 수 있는지 없는지
     public bool CheckPlacementValidity(Vector3Int gridPosition, int selectedObjectIndex)
     {
         return gridData.CanPlaceObjectAt(gridPosition, database.blockData[selectedBlockIndex].Size);
@@ -68,7 +71,7 @@ public class PlacementState : IBuildingState
 
     public void UpdateState(Vector3Int gridPosition)
     {
-        // 마우스를 클릭한 곳에 블럭을 놓을 수 있는지 없는지를 색으로 나타내줌.
+        // 마우스를 대고 있는 곳에 블럭을 놓을 수 있는지 없는지를 색으로 나타내줌.
         bool placementValidity = CheckPlacementValidity(gridPosition, selectedBlockIndex);
         previewSystem.ShowPreview();
         previewSystem.UpdatePosition(grid.CellToWorld(gridPosition), placementValidity);

@@ -7,7 +7,9 @@ public class GridData
 {
     private Dictionary<Vector3Int, PlacementData> placedObjects = new Dictionary<Vector3Int, PlacementData>();
 
-    public void AddObjectAt(Vector3Int gridPosition, Vector2Int objectSize, int ID, int placedObjectIndex)
+    // Data(Dictionary)상의 오브젝트 추가
+    // 블럭을 추가로 생성하고 삭제할 수 있는 위치를 파악하기 위함
+    public void AddObjectAt(Vector3Int gridPosition, List<Vector3Int> objectSize, int ID, int placedObjectIndex)
     {
         List<Vector3Int> positionToOccupy = CalculatePositions(gridPosition, objectSize);
         PlacementData data = new PlacementData(positionToOccupy, ID, placedObjectIndex);
@@ -21,20 +23,19 @@ public class GridData
         }
     }
 
-    private List<Vector3Int> CalculatePositions(Vector3Int gridPosition, Vector2Int objectSize)
+    // 클릭된 그리드 포지션과 오브젝트의 사이즈를 기반으로 오브젝트가 위치하게 되는 그리드 상의 좌표들을 계산
+    private List<Vector3Int> CalculatePositions(Vector3Int gridPosition, List<Vector3Int> objectSize)
     {
         List<Vector3Int> returnVal = new();
-        for (int x = 0; x < objectSize.x; x++)
+        for (int i = 0; i < objectSize.Count; i++)
         {
-            for (int y = 0; y < objectSize.y; y++)
-            {
-                returnVal.Add((gridPosition + new Vector3Int(x, 0, y)));
-            }
+            returnVal.Add((gridPosition + new Vector3Int(objectSize[i].x, 0, objectSize[i].z)));
         }
         return returnVal;
     }
 
-    public bool CanPlaceObjectAt(Vector3Int gridPosition, Vector2Int objectSize)
+    // 블럭이 놓일 그리드 상의 좌표를 계산한 뒤 그 위치에 놓을 수 있는지 판단
+    public bool CanPlaceObjectAt(Vector3Int gridPosition, List<Vector3Int> objectSize)
     {
         List<Vector3Int> positionToOccupy = CalculatePositions(gridPosition, objectSize);
         foreach (var pos in positionToOccupy)
@@ -54,6 +55,7 @@ public class GridData
         return placedObjects[gridPosition].PlaceObjectIndex;
     }
 
+    // 클릭된 좌표에 블럭이 있다면 Data 상으로 삭제
     public void RemoveObjectAt(Vector3Int gridPosition)
     {
         foreach (var pos in placedObjects[gridPosition].occupiedPositions)
@@ -63,6 +65,7 @@ public class GridData
     }
 }
 
+// 그리드 위에 놓여있는 블럭들을 관리하기 위한 데이터 구조
 public class PlacementData
 {
     public List<Vector3Int> occupiedPositions;
