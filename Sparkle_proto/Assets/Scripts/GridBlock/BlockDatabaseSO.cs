@@ -19,13 +19,5 @@ public class BlockData
     [field: SerializeField] public List<int> Price;     // [10]
     [field: SerializeField] public List<int> Effect;    // [7]
     [field: SerializeField] public int Turn;
-
-    /*
-    public int CardNum;
-    public List<int> Price; //[10]
-    public List<int> Effect; //[7]
-    public int Turn;
-    public int Slot;
-     */
 }
 

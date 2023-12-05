@@ -88,6 +88,7 @@ public class PlacementSystem : MonoBehaviour
         }
     }
 
+    // 마우스 커서가 그리드 내부에 있는지 확인
     public bool CheckCursorInGrid()
     {
         Vector3 mousePos = InputManager.instance.GetSelectedMapPosition();

@@ -17,14 +17,19 @@ public class PreviewSystem : MonoBehaviour
         cellIndicator.SetActive(false);
         cellIndicatorRenderer = cellIndicator.GetComponentInChildren<Renderer>();
     }
-
-    // TODO
-    public void StartShowingPlacementPreview(GameObject prefab /* , Vector2Int size*/)
+    
+    public void StartShowingPlacementPreview(GameObject prefab)
     {
         previewObject = Instantiate(prefab);
         PreparePreview(previewObject);
-        // PrepareCursor(size);
         cellIndicator.SetActive(true);
+    }
+    
+    public void StartShowingRemovePreview()
+    {
+        cellIndicator.SetActive(true);
+        PrepareCursor(Vector2Int.one);
+        ApplyFeedbackToCursor(false);
     }
 
     private void PrepareCursor(Vector2Int size)
@@ -80,7 +85,7 @@ public class PreviewSystem : MonoBehaviour
     private void ApplyFeedbackToCursor(bool validity)
     {
         Color c = validity ? Color.white : Color.red;
-        c.a = 0.5f;
+        c.a = 0.75f;
         cellIndicatorRenderer.material.color = c;
     }
 
@@ -114,10 +119,5 @@ public class PreviewSystem : MonoBehaviour
         previewObject.SetActive(true);
     }
 
-    public void StartShowingRemovePreview()
-    {
-        cellIndicator.SetActive(true);
-        PrepareCursor(Vector2Int.one);
-        ApplyFeedbackToCursor(false);
-    }
+    
 }
